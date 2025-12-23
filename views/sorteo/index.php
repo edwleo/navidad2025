@@ -72,27 +72,27 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
 
     <!-- Premios -->
     <div class="prizes-container">
-      <div class="prize" onclick="selectPrize(this, '🧺', 'CANASTA NAVIDEÑA')">
+      <div class="prize" onclick="selectPrize(this, '🧺', 'CANASTA NAVIDEÑA', 0)">
         <div class="prize-icon">🧺</div>
         <div class="prize-name">CANASTA<br />NAVIDEÑA</div>
         <div class="prize-quantity" id="canastas">x5</div>
       </div>
-      <div class="prize" onclick="selectPrize(this, '🍲', 'OLLA ARROCERA')">
+      <div class="prize" onclick="selectPrize(this, '🍲', 'OLLA ARROCERA', 1)">
         <div class="prize-icon">🍲</div>
         <div class="prize-name">OLLA<br />ARROCERA</div>
         <div class="prize-quantity" id="ollas">x3</div>
       </div>
-      <div class="prize" onclick="selectPrize(this, '🖥️', 'MONITOR COMPUTADORA')">
+      <div class="prize" onclick="selectPrize(this, '🖥️', 'MONITOR COMPUTADORA', 2)">
         <div class="prize-icon">🖥️</div>
         <div class="prize-name">MONITOR<br />COMPUTADORA</div>
         <div class="prize-quantity" id="monitores">x2</div>
       </div>
-      <div class="prize" onclick="selectPrize(this, '🔊', 'PARLANTE GRANDE')">
+      <div class="prize" onclick="selectPrize(this, '🔊', 'PARLANTE GRANDE', 3)">
         <div class="prize-icon">🔊</div>
         <div class="prize-name">PARLANTE<br />GRANDE</div>
         <div class="prize-quantity" id="parlantes">x2</div>
       </div>
-      <div class="prize" onclick="selectPrize(this, '🎂', 'PANETÓN')">
+      <div class="prize" onclick="selectPrize(this, '🎂', 'PANETÓN', 4)">
         <div class="prize-icon">🎂</div>
         <div class="prize-name">PANETÓN + VINO</div>
         <div class="prize-quantity" id="panetones">x10</div>
@@ -103,6 +103,13 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
 
       let listaPremios = [];
 
+      let distribucionCanastas = {
+        "CHINCHA ALTA" : 9,
+        "GROCIO PRADO": 2,
+        "PUEBLO NUEVO": 3,
+        "SUNAMPE": 14,
+        "TAMBO DE MORA": 2
+      }
 
       // Sonidos (usando Web Audio API para generar sonidos)
       const audioContext = new (window.AudioContext ||
@@ -220,7 +227,7 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       // Selección de premio
       let selectedPrize = null;
 
-      function selectPrize(element, icon, name) {
+      function selectPrize(element, icon, name, index) {
         // Remover selección previa
         document
           .querySelectorAll(".prize")
@@ -229,6 +236,13 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
         // Seleccionar nuevo premio
         element.classList.add("selected");
         selectedPrize = { icon, name };
+
+        if (listaPremios[index]['disponible'] == 1){
+          document.querySelector(".spin-button").setAttribute("disabled", true)
+          //alert('Agotado, seleccione otro')
+        }else{
+          document.querySelector(".spin-button").removeAttribute("disabled")
+        }
 
         // Mostrar overlay
         //const overlay = document.getElementById("prizeOverlay");
