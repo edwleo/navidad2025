@@ -32,6 +32,14 @@ CREATE TABLE clientes
   activo TINYINT NOT NULL DEFAULT 1
 )ENGINE = INNODB;
 
+CREATE TABLE ganadores
+(
+  idganador INT AUTO_INCREMENT PRIMARY KEY,
+  idcliente INT NOT NULL,
+  idpremio INT NOT NULL,
+  fechahora DATE NOT NULL DEFAULT NOW()
+)ENGINE = INNODB;
+
 SELECT * FROM clientes;
 
 INSERT INTO clientes

@@ -19,320 +19,8 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       rel="stylesheet"
     />
 
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    <link rel="stylesheet" href="../../public/css/estilos.css">
 
-      body {
-        font-family: "Arial", sans-serif;
-        background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      /* Navbar navideño */
-      .navbar {
-        background: linear-gradient(
-          90deg,
-          #c41e3a 0%,
-          #165b33 50%,
-          #c41e3a 100%
-        );
-        padding: 20px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        position: relative;
-        overflow: hidden;
-        z-index: 100;
-      }
-
-      .navbar::before {
-        content: "❄️ ⛄ 🎄 ⭐ 🎁 🔔 ❄️ ⛄ 🎄 ⭐ 🎁 🔔";
-        position: absolute;
-        font-size: 30px;
-        animation: snowScroll 20s linear infinite;
-        white-space: nowrap;
-      }
-
-      @keyframes snowScroll {
-        0% {
-          transform: translateX(100%);
-        }
-        100% {
-          transform: translateX(-100%);
-        }
-      }
-
-      .decoration {
-        font-size: 50px;
-        animation: float 3s ease-in-out infinite;
-        z-index: 1;
-      }
-
-      .decoration:nth-child(2) {
-        animation-delay: 0.5s;
-      }
-      .decoration:nth-child(3) {
-        animation-delay: 1s;
-      }
-      .decoration:nth-child(4) {
-        animation-delay: 1.5s;
-      }
-      .decoration:nth-child(5) {
-        animation-delay: 2s;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px) rotate(0deg);
-        }
-        50% {
-          transform: translateY(-20px) rotate(10deg);
-        }
-      }
-
-      /* Contenedor principal */
-      .main-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 50px 20px;
-        gap: 50px;
-        flex-wrap: wrap;
-        position: relative;
-        z-index: 10;
-      }
-
-      /* Máquina tragamonedas */
-      .slot-machine {
-        background: linear-gradient(145deg, #8b0000, #dc143c);
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        border: 5px solid gold;
-      }
-
-      .slots-container {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-      }
-
-      .slot {
-        width: 80px;
-        height: 120px;
-        background: #fff;
-        border: 4px solid #165b33;
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-      }
-
-      .slot-numbers {
-        position: absolute;
-        width: 100%;
-        transition: transform 0.1s linear;
-      }
-
-      .slot-number {
-        height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 60px;
-        font-weight: bold;
-        color: #c41e3a;
-      }
-
-      .spin-button {
-        width: 100%;
-        padding: 20px;
-        font-size: 24px;
-        font-weight: bold;
-        background: linear-gradient(145deg, #ffd700, #ffed4e);
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        color: #8b0000;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s;
-      }
-
-      .spin-button:hover {
-        transform: scale(1.05);
-      }
-
-      .spin-button:active {
-        transform: scale(0.95);
-      }
-
-      /* Panel de ganador */
-      .winner-panel {
-        background: linear-gradient(145deg, #fff, #f0f0f0);
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        border: 5px solid gold;
-        min-width: 350px;
-        text-align: center;
-      }
-
-      .winner-title {
-        font-size: 28px;
-        color: #c41e3a;
-        margin-bottom: 20px;
-        font-weight: bold;
-      }
-
-      .winner-name {
-        font-size: 32px;
-        color: #165b33;
-        font-weight: bold;
-        min-height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        background: #fffacd;
-        border-radius: 10px;
-        border: 3px dashed #c41e3a;
-      }
-
-      /* Premios */
-      .prizes-container {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        padding: 40px 20px;
-        flex-wrap: wrap;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        margin: 0 20px;
-        position: relative;
-        z-index: 10;
-      }
-
-      .prize {
-        background: linear-gradient(145deg, #fff, #f8f8f8);
-        padding: 25px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        border: 3px solid gold;
-        min-width: 150px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        cursor: pointer;
-        position: relative;
-      }
-
-      .prize:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-      }
-
-      .prize.selected {
-        transform: scale(1.1);
-        box-shadow: 0 0 40px rgba(255, 215, 0, 0.9);
-        border: 5px solid #ffd700;
-        background: linear-gradient(145deg, #fffacd, #fff8dc);
-      }
-
-      .prize.selected::after {
-        content: "✓";
-        position: absolute;
-        top: -15px;
-        right: -15px;
-        background: #ffd700;
-        color: #8b0000;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        font-weight: bold;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      }
-
-      .prize-icon {
-        font-size: 60px;
-        margin-bottom: 10px;
-      }
-
-      .prize-name {
-        font-size: 14px;
-        font-weight: bold;
-        color: #165b33;
-        margin-bottom: 8px;
-      }
-
-      .prize-quantity {
-        font-size: 20px;
-        font-weight: bold;
-        color: #c41e3a;
-        background: #fffacd;
-        padding: 5px 15px;
-        border-radius: 20px;
-      }
-
-      /* Overlay de premio seleccionado */
-      .prize-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 0;
-        pointer-events: none;
-      }
-
-      .prize-overlay.active {
-        display: flex;
-      }
-
-      .prize-background {
-        font-size: 400px;
-        opacity: 0.8;
-        color: #ffd700;
-        text-shadow: 0 0 100px rgba(255, 215, 0, 0.3);
-      }
-
-      /* Canvas para confetti */
-      #confetti-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 999;
-      }
-
-      .title {
-        text-align: center;
-        font-size: 82px;
-        font-family: "Rouge Script", cursive;
-        color: #ffd700;
-        margin: 0px 0;
-        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7),
-          0 0 25px rgba(255, 215, 0, 0.5);
-        font-weight: bold;
-        letter-spacing: 3px;
-        position: relative;
-        z-index: 10;
-      }
-    </style>
   </head>
   <body>
     <!-- Canvas para confetti -->
@@ -387,34 +75,35 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       <div class="prize" onclick="selectPrize(this, '🧺', 'CANASTA NAVIDEÑA')">
         <div class="prize-icon">🧺</div>
         <div class="prize-name">CANASTA<br />NAVIDEÑA</div>
-        <div class="prize-quantity">x5</div>
+        <div class="prize-quantity" id="canastas">x5</div>
       </div>
       <div class="prize" onclick="selectPrize(this, '🍲', 'OLLA ARROCERA')">
         <div class="prize-icon">🍲</div>
         <div class="prize-name">OLLA<br />ARROCERA</div>
-        <div class="prize-quantity">x3</div>
+        <div class="prize-quantity" id="ollas">x3</div>
       </div>
-      <div
-        class="prize"
-        onclick="selectPrize(this, '🖥️', 'MONITOR COMPUTADORA')"
-      >
+      <div class="prize" onclick="selectPrize(this, '🖥️', 'MONITOR COMPUTADORA')">
         <div class="prize-icon">🖥️</div>
         <div class="prize-name">MONITOR<br />COMPUTADORA</div>
-        <div class="prize-quantity">x2</div>
+        <div class="prize-quantity" id="monitores">x2</div>
       </div>
       <div class="prize" onclick="selectPrize(this, '🔊', 'PARLANTE GRANDE')">
         <div class="prize-icon">🔊</div>
         <div class="prize-name">PARLANTE<br />GRANDE</div>
-        <div class="prize-quantity">x2</div>
+        <div class="prize-quantity" id="parlantes">x2</div>
       </div>
       <div class="prize" onclick="selectPrize(this, '🎂', 'PANETÓN')">
         <div class="prize-icon">🎂</div>
-        <div class="prize-name">PANETÓN</div>
-        <div class="prize-quantity">x10</div>
+        <div class="prize-name">PANETÓN + VINO</div>
+        <div class="prize-quantity" id="panetones">x10</div>
       </div>
     </div>
 
     <script>
+
+      let listaPremios = [];
+
+
       // Sonidos (usando Web Audio API para generar sonidos)
       const audioContext = new (window.AudioContext ||
         window.webkitAudioContext)();
@@ -542,10 +231,10 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
         selectedPrize = { icon, name };
 
         // Mostrar overlay
-        const overlay = document.getElementById("prizeOverlay");
-        const background = document.getElementById("prizeBackground");
+        //const overlay = document.getElementById("prizeOverlay");
+        //const background = document.getElementById("prizeBackground");
         //background.textContent = icon;
-        overlay.classList.add("active");
+        //overlay.classList.add("active");
       }
 
       // Base de datos de participantes (código: nombre)
@@ -665,7 +354,31 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
         });
       }
 
+      //FUNCIONES PERSONALIZADAS
+      function obtenerPremios(){
+        const datos = new FormData()
+        datos.append("operacion", "obtenerPremios")
+
+        fetch(`../../app/controllers/premio.controller.php`, {
+          method: 'POST',
+          body: datos
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data){
+              listaPremios = data;
+              document.querySelector("#canastas").innerHTML = data[0]['disponible']
+              document.querySelector("#ollas").innerHTML = data[1]['disponible']
+              document.querySelector("#monitores").innerHTML = data[2]['disponible']
+              document.querySelector("#parlantes").innerHTML = data[3]['disponible']
+              document.querySelector("#panetones").innerHTML = data[4]['disponible']
+            }
+          })
+      }
+
+
       // Inicializar al cargar
+      obtenerPremios()
       initSlots();
     </script>
   </body>
