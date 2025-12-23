@@ -19,8 +19,7 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="../../public/css/estilos.css">
-
+    <link rel="stylesheet" href="../../public/css/estilos.css" />
   </head>
   <body>
     <!-- Canvas para confetti -->
@@ -67,12 +66,16 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       <div class="winner-panel">
         <div class="winner-title">🏆 GANADOR 🏆</div>
         <div class="winner-name" id="winnerName">Presiona para sortear</div>
+        <h3 style="margin-top: 0.5rem;" id="ubicacion"></h3>
       </div>
     </div>
 
     <!-- Premios -->
     <div class="prizes-container">
-      <div class="prize" onclick="selectPrize(this, '🧺', 'CANASTA NAVIDEÑA', 0)">
+      <div
+        class="prize"
+        onclick="selectPrize(this, '🧺', 'CANASTA NAVIDEÑA', 0)"
+      >
         <div class="prize-icon">🧺</div>
         <div class="prize-name">CANASTA<br />NAVIDEÑA</div>
         <div class="prize-quantity" id="canastas">x5</div>
@@ -82,12 +85,18 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
         <div class="prize-name">OLLA<br />ARROCERA</div>
         <div class="prize-quantity" id="ollas">x3</div>
       </div>
-      <div class="prize" onclick="selectPrize(this, '🖥️', 'MONITOR COMPUTADORA', 2)">
+      <div
+        class="prize"
+        onclick="selectPrize(this, '🖥️', 'MONITOR COMPUTADORA', 2)"
+      >
         <div class="prize-icon">🖥️</div>
         <div class="prize-name">MONITOR<br />COMPUTADORA</div>
         <div class="prize-quantity" id="monitores">x2</div>
       </div>
-      <div class="prize" onclick="selectPrize(this, '🔊', 'PARLANTE GRANDE', 3)">
+      <div
+        class="prize"
+        onclick="selectPrize(this, '🔊', 'PARLANTE GRANDE', 3)"
+      >
         <div class="prize-icon">🔊</div>
         <div class="prize-name">PARLANTE<br />GRANDE</div>
         <div class="prize-quantity" id="parlantes">x2</div>
@@ -99,17 +108,10 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       </div>
     </div>
 
+    <input type="text" id="premio-buscado" value="1">
+
     <script>
-
       let listaPremios = [];
-
-      let distribucionCanastas = {
-        "CHINCHA ALTA" : 9,
-        "GROCIO PRADO": 2,
-        "PUEBLO NUEVO": 3,
-        "SUNAMPE": 14,
-        "TAMBO DE MORA": 2
-      }
 
       // Sonidos (usando Web Audio API para generar sonidos)
       const audioContext = new (window.AudioContext ||
@@ -228,6 +230,10 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       let selectedPrize = null;
 
       function selectPrize(element, icon, name, index) {
+
+        //Enviamos el premio buscado a la caja
+        document.querySelector("#premio-buscado").value = parseInt(index) + 1
+
         // Remover selección previa
         document
           .querySelectorAll(".prize")
@@ -237,18 +243,13 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
         element.classList.add("selected");
         selectedPrize = { icon, name };
 
-        if (listaPremios[index]['disponible'] == 1){
-          document.querySelector(".spin-button").setAttribute("disabled", true)
-          //alert('Agotado, seleccione otro')
-        }else{
-          document.querySelector(".spin-button").removeAttribute("disabled")
+        if (listaPremios[index]["disponible"] == 0) {
+          document.querySelector(".spin-button").setAttribute("disabled", true);
+          alert('Agotado, seleccione otro')
+        } else {
+          document.querySelector(".spin-button").removeAttribute("disabled");
         }
 
-        // Mostrar overlay
-        //const overlay = document.getElementById("prizeOverlay");
-        //const background = document.getElementById("prizeBackground");
-        //background.textContent = icon;
-        //overlay.classList.add("active");
       }
 
       // Base de datos de participantes (código: nombre)
@@ -293,38 +294,72 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
         const button = document.querySelector(".spin-button");
         button.disabled = true;
         button.textContent = "🎰 SORTEANDO... 🎰";
-        document.querySelector("#winnerName").textContent = ""
+
+        document.querySelector("#winnerName").textContent = "";
+        document.querySelector("#ubicacion").textContent = "";
 
         // Reproducir sonido de giro
         const spinInterval = setInterval(() => {
           playSpinSound();
         }, 100);
 
-        // Obtener códigos disponibles
-        const codes = Object.keys(participants);
-        const selectedCode = codes[Math.floor(Math.random() * codes.length)];
-        const digits = selectedCode.split("");
+        //Identificando lo que se va a sortear
+        const idpremio = parseInt(document.querySelector("#premio-buscado").value)
+        
+        const datos = new FormData();
 
-        // Animar cada slot
-        const promises = digits.map((digit, index) => {
-          return animateSlot(index + 1, digit);
-        });
+        if (idpremio == 1){
+          datos.append("operacion", "obtenerCanasta");
+        }else{
+          datos.append("operacion", "obtenerPremio");
+          datos.append("idpremio", idpremio)
+        }
 
-        Promise.all(promises).then(() => {
-          clearInterval(spinInterval);
+        //Obteniendo al ganador
+        fetch(`../../app/controllers/cliente.controller.php`, {
+          method: "POST",
+          body: datos,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data) {
+              //Solo si hay datos
+              const idtemp = parseInt(data["idcliente"]);
+              const idganador = idtemp.toString().padStart(4, "0");
+              const ganador = data["cliente"];
+              const distrito = data["distrito"];
+              const dni = data["dni"];
 
-          // Mostrar ganador
-          document.getElementById("winnerName").textContent =
-            participants[selectedCode];
+              // Obtener códigos disponibles
+              //const codes = Object.keys(participants);
+              //const selectedCode = codes[Math.floor(Math.random() * codes.length)];
+              //const digits = selectedCode.split("");
+              const digits = idganador.split("");
 
-          // Reproducir sonido de victoria y confetti
-          playWinSound();
-          createConfetti();
+              // Animar cada slot
+              const promises = digits.map((digit, index) => {
+                return animateSlot(index + 1, digit);
+              });
 
-          isSpinning = false;
-          button.disabled = false;
-          button.textContent = "🎰 SORTEAR 🎰";
-        });
+              Promise.all(promises).then(() => {
+                clearInterval(spinInterval);
+
+                // Mostrar ganador
+                document.getElementById("winnerName").textContent = ganador;
+                document.getElementById("ubicacion").textContent = distrito;
+
+                // Reproducir sonido de victoria y confetti
+                playWinSound();
+                createConfetti();
+
+                isSpinning = false;
+                button.disabled = false;
+                button.textContent = "🎰 SORTEAR 🎰";
+              });
+
+              obtenerPremios();
+            }
+          });
       }
 
       function animateSlot(slotIndex, finalDigit) {
@@ -369,30 +404,30 @@ if (!isset($_SESSION['acceso']) || !$_SESSION['acceso']){
       }
 
       //FUNCIONES PERSONALIZADAS
-      function obtenerPremios(){
-        const datos = new FormData()
-        datos.append("operacion", "obtenerPremios")
+      function obtenerPremios() {
+        const datos = new FormData();
+        datos.append("operacion", "obtenerPremios");
 
         fetch(`../../app/controllers/premio.controller.php`, {
-          method: 'POST',
-          body: datos
+          method: "POST",
+          body: datos,
         })
-          .then(response => response.json())
-          .then(data => {
-            if (data){
+          .then((response) => response.json())
+          .then((data) => {
+            if (data) {
               listaPremios = data;
-              document.querySelector("#canastas").innerHTML = data[0]['disponible']
-              document.querySelector("#ollas").innerHTML = data[1]['disponible']
-              document.querySelector("#monitores").innerHTML = data[2]['disponible']
-              document.querySelector("#parlantes").innerHTML = data[3]['disponible']
-              document.querySelector("#panetones").innerHTML = data[4]['disponible']
+              document.querySelector("#canastas").innerHTML = data[0]["disponible"];
+              document.querySelector("#ollas").innerHTML = data[1]["disponible"];
+              document.querySelector("#monitores").innerHTML = data[2]["disponible"];
+              document.querySelector("#parlantes").innerHTML = data[3]["disponible"];
+              document.querySelector("#panetones").innerHTML = data[4]["disponible"];
+              console.log(listaPremios)
             }
-          })
+          });
       }
 
-
       // Inicializar al cargar
-      obtenerPremios()
+      obtenerPremios();
       initSlots();
     </script>
   </body>

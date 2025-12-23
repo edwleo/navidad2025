@@ -10,6 +10,9 @@ CREATE TABLE premios
   tipo        ENUM('Todos', 'F1', 'F2') NOT NULL
 )ENGINE = INNODB;
 
+DELETE FROM premios;
+ALTER TABLE premios AUTO_INCREMENT 1;
+
 INSERT INTO premios (nombre, disponible, tipo) VALUES
   ('Canastas navideñas', 30, 'Todos'),
   ('Olla arrocera', 1, 'F2'),
@@ -37,7 +40,7 @@ CREATE TABLE ganadores
   idganador INT AUTO_INCREMENT PRIMARY KEY,
   idcliente INT NOT NULL,
   idpremio INT NOT NULL,
-  fechahora DATE NOT NULL DEFAULT NOW()
+  fechahora DATETIME NOT NULL DEFAULT NOW()
 )ENGINE = INNODB;
 
 SELECT * FROM clientes;

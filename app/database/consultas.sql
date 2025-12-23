@@ -37,8 +37,28 @@ SELECT
 
 -- esta consulta retorna la cantidad de canastas por distrito que salieron
 SELECT
-  clientes.distrito, COUNT(clientes.distrito)
+  clientes.distrito, COUNT(clientes.distrito) 'total'
   FROM ganadores
   INNER JOIN clientes ON clientes.idcliente = ganadores.idcliente
   WHERE ganadores.idpremio = 1
   GROUP BY clientes.distrito;
+
+DELETE FROM ganadores;
+ALTER TABLE ganadores AUTO_INCREMENT 1;
+
+SELECT * FROM premios;
+SELECT * FROM clientes WHERE activo = 0;
+SELECT * FROM ganadores;
+
+UPDATE premios SET disponible = 30 WHERE idpremio = 1;
+UPDATE clientes SET activo = 1 WHERE activo = 0;
+
+DELETE FROM ganadores;
+ALTER TABLE ganadores AUTO_INCREMENT 1;
+
+
+-- Consulta para conseguir cualquier premio menos la canasta
+SELECT idcliente, cliente, dni 
+  FROM clientes 
+  WHERE activo = 1 AND distrito != 'SUNAMPE'
+  ORDER BY RAND() LIMIT 1;
